@@ -38,8 +38,8 @@ public class Endereco {
     /**
      * Construtor padrão para criar um endereço
      * @param logradouro até 100 caracteres
-     * @param numero até 5 dígitos inteiros
-     * @param complemento até 200 caracteres
+     * @param numero até 5 dígitos inteiros (não obrigatório)
+     * @param complemento até 200 caracteres (não obrigatório)
      * @param bairro até 50 caracteres
      * @param cidade até 50 caracteres
      * @param UF sigla em caixa alta com o estado
@@ -65,12 +65,16 @@ public class Endereco {
     public void setNumero(Integer numero) {
         if (numero != null && numero > 0) {
             this.numero = numero;
+        } else {
+            this.numero = null;
         }
     }
 
     public void setComplemento(String complemento) {
         if (complemento != null && !complemento.isEmpty()) {
             this.complemento = complemento;
+        } else {
+            this.complemento = null;
         }
     }
 

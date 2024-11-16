@@ -1,5 +1,6 @@
 package com.vollmed.api.model.entity;
 
+import com.vollmed.api.model.dto.DadosCadastroMedico;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,13 +47,28 @@ public class Medico {
      * @param especialidade sendo uma das seguintes: ORTOPEDIA, CARDIOLOGIA, GINECOLOGIA, DERMATOLOGIA
      * @param endereco do médico
      */
-    public Medico(String nome, String email, String celular, String CRM, Especialidade especialidade, Endereco endereco) {
+    public Medico(String nome, String email, String celular, String CRM,
+                  Especialidade especialidade, Endereco endereco) {
         setNome(nome);
         setEmail(email);
         setCelular(celular);
         setCRM(CRM);
         setEspecialidade(especialidade);
         setEndereco(endereco);
+    }
+
+    /**
+     * Construtor para os dados do médico para cadastrar
+     * @param dadosCadastroMedico que vieram na requisição
+     */
+    public Medico(DadosCadastroMedico dadosCadastroMedico) {
+        this(dadosCadastroMedico.nome(), dadosCadastroMedico.email(),
+                dadosCadastroMedico.celular(), dadosCadastroMedico.CRM(),
+                dadosCadastroMedico.especialidade(), new Endereco(
+                        dadosCadastroMedico.logradouro(), dadosCadastroMedico.numero(),
+                        dadosCadastroMedico.complemento(), dadosCadastroMedico.bairro(),
+                        dadosCadastroMedico.cidade(), dadosCadastroMedico.UF(), dadosCadastroMedico.CEP()
+                ));
     }
 
     public void setNome(String nome) {
