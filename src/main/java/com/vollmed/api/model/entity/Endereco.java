@@ -14,17 +14,24 @@ import lombok.NoArgsConstructor;
 @Getter
 @Embeddable
 public class Endereco {
+
     @Column(nullable = false, length = 200)
     private String logradouro;
+
     private Integer numero;
+
     @Column(length = 200)
     private String complemento;
+
     @Column(length = 50, nullable = false)
     private String bairro;
+
     @Column(length = 50, nullable = false)
     private String cidade;
+
     @Column(nullable = false)
     private UF UF;
+
     @Column(nullable = false, length = 8)
     private String CEP;
 

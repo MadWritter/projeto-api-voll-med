@@ -11,6 +11,6 @@ CREATE TABLE IF NOT EXISTS medico(
     bairro VARCHAR(50) NOT NULL,
     cidade VARCHAR(50) NOT NULL,
     UF ENUM('AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 'MT', 'PA', 'PB', 'PE', 'PI', 'PR', 'RJ', 'RN', 'RO', 'RR', 'RS', 'SC', 'SE', 'SP', 'TO'),
-    CEP CHAR(8),
+    CEP CHAR(8) NOT NULL,
     PRIMARY KEY(id)
 )

@@ -18,16 +18,22 @@ public class Medico {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false, length = 100)
     private String nome;
+
     @Column(nullable = false, length = 100, unique = true)
     private String email;
+
     @Column(nullable = false, length = 11, unique = true)
     private String celular;
+
     @Column(nullable = false, length = 6, unique = true)
     private String CRM;
+
     @Column(nullable = false)
     private Especialidade especialidade;
+
     @Embedded
     private Endereco endereco;
 
