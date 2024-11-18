@@ -33,12 +33,12 @@ public record DadosCadastroMedico(
 
         @NotBlank(message = "O campo celular não pode ser vazio")
         @Size(min = 11, max = 11, message = "O campo celular deve ter os 11 dígitos DDD(2) + Número(9)")
-        @Pattern(regexp = "[0-9]", message = "O celular deve conter apenas números")
+        @Pattern(regexp = "\\d{11}", message = "O celular deve conter apenas números")
         String celular,
 
         @NotBlank(message = "O CRM não pode ser vazio")
         @Size(min = 6, max = 6, message = "O CRM deve conter os 6 dígitos")
-        @Pattern(regexp = "[0-9]", message = "O CRM deve conter apenas números")
+        @Pattern(regexp = "\\d{6}", message = "O CRM deve conter apenas números")
         String CRM,
 
         @NotNull(message = "Deve conter uma das especialidades: 'ORTOPEDIA', 'CARDIOLOGIA', 'GINECOLOGIA', 'DERMATOLOGIA'")
@@ -48,7 +48,8 @@ public record DadosCadastroMedico(
         @Size(min = 5, max = 100, message = "O logradouro deve conter entre 5 e 100 caracteres")
         String logradouro,
 
-        @Size(min = 1, max = 99999, message = "O número deve estar entre 1 e 99999")
+        @Min(value = 1, message = "O valor mínimo para o número é 1")
+        @Max(value = 99999, message = "O valor máximo para o número é 99999")
         Integer numero,
 
         @Size(min = 5, max = 200, message = "O complemento deve conter entre 5 e 200 caracteres")
@@ -67,7 +68,7 @@ public record DadosCadastroMedico(
 
         @NotBlank(message = "CEP não pode estar em branco")
         @Size(min = 8, max = 8, message = "Somente os 8 dígitos do CEP")
-        @Pattern(regexp = "[0-9]", message = "Deve conter apenas os números do CEP")
+        @Pattern(regexp = "\\d{8}", message = "Deve conter apenas os números do CEP")
         String CEP
 ) {
 

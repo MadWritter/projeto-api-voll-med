@@ -2,6 +2,8 @@ package com.vollmed.api.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,6 +31,7 @@ public class Endereco {
     @Column(length = 50, nullable = false)
     private String cidade;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UF UF;
 

@@ -8,7 +8,7 @@ import lombok.Getter;
  * @author Jean Maciel
  */
 @Getter
-public class MedicoNaoCadastradoException extends Exception {
+public class MedicoNaoCadastradoException extends RuntimeException {
 
     String mensagem;
 

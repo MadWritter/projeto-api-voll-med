@@ -32,6 +32,7 @@ public class Medico {
     @Column(nullable = false, length = 6, unique = true)
     private String CRM;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Especialidade especialidade;
 
