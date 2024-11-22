@@ -14,8 +14,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.util.Optional;
+
 import static com.vollmed.api.builders.DadosCadastroMedicoBuilder.dadosDeCadastroMedico;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,4 +56,25 @@ public class MedicoServiceTest {
         assertThrows(DataIntegrityViolationException.class, () -> medicoService.cadastrarNovoMedico(dadosDeCadastro));
     }
 
+    @Test
+    @DisplayName("Deve buscar um médico a partir de um ID")
+    public void deveBuscarUmMedico() {
+        var dadosCadastroMedico = dadosDeCadastroMedico().validos().agora();
+        var medicoCadastrado = new Medico(dadosCadastroMedico);
+        when(medicoRepository.findById(anyLong())).thenReturn(Optional.of(medicoCadastrado));
+
+        DadosMedicoCadastrado dadosCadastrado = medicoService.findMedicoByID(1L);
+
+        assertNotNull(dadosCadastrado);
+    }
+
+    @Test
+    @DisplayName("Deve retornar null caso não encontre um médico")
+    public void deveRetornarNull_casoMedicoNaoExista() {
+        when(medicoRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        DadosMedicoCadastrado dadosMedicoCadastrado = medicoService.findMedicoByID(1L);
+
+        assertNull(dadosMedicoCadastrado);
+    }
 }
