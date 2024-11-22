@@ -1,9 +1,16 @@
 package com.vollmed.api.controller;
 
 import com.vollmed.api.model.exceptions.MedicoNaoCadastradoException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Responsável por tratar as exceções no MedicoController
@@ -14,22 +21,31 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice(assignableTypes = MedicoController.class)
 public class MedicoControllerAdvice {
 
-    @ExceptionHandler(value = MedicoNaoCadastradoException.class)
-    public ResponseEntity<Object> handleMedicoNaoCadastradoException(MedicoNaoCadastradoException ex) {
-        if (ex.getMensagem().contains("Erro de integridade de dados: ")) {
-            if (ex.getMensagem().contains("medico.email")) {
-                return ResponseEntity.badRequest().body("Email já cadastrado");
-            }
-            if (ex.getMensagem().contains("medico.celular")) {
-                return ResponseEntity.badRequest().body("Celular já cadastrado");
-            }
-            if (ex.getMensagem().contains("medico.CRM")) {
-                return ResponseEntity.badRequest().body("CRM já cadastrado");
-            } else {
-                return ResponseEntity.badRequest().body(ex.getMensagem());
-            }
-        } else {
-            return ResponseEntity.internalServerError().body("Erro ao processar a requisição no servidor, tente novamente em instantes");
+    /**
+     * Trata as exceções pertinentes a duplicidade de dados no cadastro
+     * @param e exceção que informa a duplicidade
+     * @return um Bad Request com uma mensagem sobre a duplicidade ocorrida
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Object> handleDataIntegrityException(DataIntegrityViolationException e) {
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        response.put("timestamp", LocalDateTime.now().toString());
+        response.put("status", 400);
+
+        // Considerando que vai barrar na primeira duplicidade...
+
+        if (e.getMessage().toLowerCase().contains("medico.email")) {
+            response.put("message", "O email informado já foi cadastrado");
         }
+        if (e.getMessage().toLowerCase().contains("medico.celular")) {
+            response.put("message", "O celular informado já foi cadastrado");
+        }
+        if (e.getMessage().toLowerCase().contains("medico.crm")) {
+            response.put("message", "O CRM informado já foi cadastrado");
+        }
+
+        response.put("path","/medico");
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

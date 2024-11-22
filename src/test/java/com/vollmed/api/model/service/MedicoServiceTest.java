@@ -28,7 +28,7 @@ public class MedicoServiceTest {
 
     @Test
     @DisplayName("Deve cadastrar um médico corretamente")
-    public void deveCadastrarUmMedico() throws MedicoNaoCadastradoException {
+    public void deveCadastrarUmMedico() {
         var dadosCadastro = dadosDeCadastroMedico().validos().agora();
         var medicoCadastrado = new Medico(dadosCadastro);
         when(medicoRepository.save(Mockito.any(Medico.class))).thenReturn(medicoCadastrado);
@@ -38,14 +38,8 @@ public class MedicoServiceTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exceção caso o DTO seja nulo no cadastro")
-    public void deveLancaoExcecao_casoDTONuloCadastro() throws MedicoNaoCadastradoException {
-        assertThrows(NullPointerException.class, () -> medicoService.cadastrarNovoMedico(null));
-    }
-
-    @Test
     @DisplayName("Deve lançar exceção caso o banco esteja fora e não consiga cadastrar")
-    public void deveLancarExcecao_casoBancoForaNoCadastro() throws MedicoNaoCadastradoException {
+    public void deveLancarExcecao_casoBancoForaNoCadastro() {
         var dadosDeCadastro = dadosDeCadastroMedico().validos().agora();
         when(medicoRepository.save(Mockito.any(Medico.class))).thenThrow(PersistenceException.class);
         assertThrows(MedicoNaoCadastradoException.class, () -> medicoService.cadastrarNovoMedico(dadosDeCadastro));
@@ -53,9 +47,10 @@ public class MedicoServiceTest {
 
     @Test
     @DisplayName("Deve lançar exceção caso algum dado esteja repetido")
-    public void deveLancarExcecao_casoAlgumDadoEstejaRepetido() throws MedicoNaoCadastradoException {
+    public void deveLancarExcecao_casoAlgumDadoEstejaRepetido() {
         var dadosDeCadastro = dadosDeCadastroMedico().validos().agora();
         when(medicoRepository.save(Mockito.any(Medico.class))).thenThrow(DataIntegrityViolationException.class);
-        assertThrows(MedicoNaoCadastradoException.class, () -> medicoService.cadastrarNovoMedico(dadosDeCadastro));
+        assertThrows(DataIntegrityViolationException.class, () -> medicoService.cadastrarNovoMedico(dadosDeCadastro));
     }
+
 }

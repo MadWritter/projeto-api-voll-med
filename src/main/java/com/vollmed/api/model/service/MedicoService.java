@@ -25,16 +25,19 @@ public class MedicoService {
         this.medicoRepository = medicoRepository;
     }
 
+    /**
+     * Realiza o cadastro do Médico no sistema
+     * @param dadosCadastro que vem da requisição
+     * @return um DTO com os dados cadastrados
+     */
     @Transactional(rollbackOn = MedicoNaoCadastradoException.class)
-    public DadosMedicoCadastrado cadastrarNovoMedico(DadosCadastroMedico dadosCadastro) throws MedicoNaoCadastradoException {
+    public DadosMedicoCadastrado cadastrarNovoMedico(DadosCadastroMedico dadosCadastro) {
         Medico medicoParaCadastrar = new Medico(dadosCadastro);
         try {
             Medico medicoCadastrado = medicoRepository.save(medicoParaCadastrar);
             return new DadosMedicoCadastrado(medicoCadastrado);
         } catch (PersistenceException e) {
             throw new MedicoNaoCadastradoException("Erro ao persistir o médico no banco");
-        } catch (DataIntegrityViolationException dataException) {
-            throw new MedicoNaoCadastradoException("Erro de integridade de dados: " + dataException.getMessage());
         }
     }
 }
