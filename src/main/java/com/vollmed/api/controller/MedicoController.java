@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 /**
  * Endpoint para resolver as requisições do médico no sistema
@@ -54,5 +55,18 @@ public class MedicoController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(dadosConsultados);
+    }
+
+    /**
+     * Busca todos os Médicos do sistema
+     * @return uma Lista de DTOs com todos os médicos cadastrados
+     */
+    @GetMapping
+    public ResponseEntity<List<DadosMedicoCadastrado>> buscarTodos() {
+        List<DadosMedicoCadastrado> medicos = medicoService.findAll();
+        if (medicos.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(medicos);
     }
 }

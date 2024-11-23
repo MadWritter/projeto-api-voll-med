@@ -9,7 +9,9 @@ import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Serviço para a entidade Médico
@@ -51,5 +53,14 @@ public class MedicoService {
     public DadosMedicoCadastrado findMedicoByID(Long ID) {
         Optional<Medico> medicoConsultado = medicoRepository.findById(ID);
         return medicoConsultado.map(DadosMedicoCadastrado::new).orElse(null);
+    }
+
+    /**
+     * Retorna todos os médicos cadastrados no banco
+     * @return uma Lista com os DTOs dos médicos cadastrados
+     */
+    public List<DadosMedicoCadastrado> findAll() {
+        return medicoRepository.findAll().stream()
+                .map(DadosMedicoCadastrado::new).collect(Collectors.toList());
     }
 }

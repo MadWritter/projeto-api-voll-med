@@ -54,7 +54,7 @@ public class MedicoControllerAdvice {
      * @return uma resposta HTTP 500 informando sobre o problema interno.
      */
     @ExceptionHandler(ConnectException.class)
-    public ResponseEntity<Object> handleDataRetrievalFailureException(ConnectException e) {
+    public ResponseEntity<Object> handleConnectionException(ConnectException e) {
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("timestamp", LocalDateTime.now().toString());
         response.put("status", 500);

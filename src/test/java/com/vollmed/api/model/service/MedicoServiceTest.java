@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.vollmed.api.builders.DadosCadastroMedicoBuilder.dadosDeCadastroMedico;
@@ -76,5 +77,19 @@ public class MedicoServiceTest {
         DadosMedicoCadastrado dadosMedicoCadastrado = medicoService.findMedicoByID(1L);
 
         assertNull(dadosMedicoCadastrado);
+    }
+
+    @Test
+    @DisplayName("Deve retornar todos os médicos cadastrados")
+    public void deveRetornarTodosOsMedicos() {
+        var dadosCadastroMedico = dadosDeCadastroMedico().validos().agora();
+        var medico1 = new Medico(dadosCadastroMedico);
+        var medico2 = new Medico(dadosCadastroMedico);
+        var medico3 = new Medico(dadosCadastroMedico);
+        when(medicoRepository.findAll()).thenReturn(List.of(medico1, medico2, medico3));
+
+        List<DadosMedicoCadastrado> medicosCadastrados = medicoService.findAll();
+        assertNotNull(medicosCadastrados);
+        assertFalse(medicosCadastrados.isEmpty());
     }
 }
