@@ -7,11 +7,11 @@ import com.vollmed.api.model.exceptions.MedicoNaoCadastradoException;
 import com.vollmed.api.model.repository.MedicoRepository;
 import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Serviço para a entidade Médico
@@ -52,15 +52,23 @@ public class MedicoService {
      */
     public DadosMedicoCadastrado findMedicoByID(Long ID) {
         Optional<Medico> medicoConsultado = medicoRepository.findById(ID);
-        return medicoConsultado.map(DadosMedicoCadastrado::new).orElse(null);
+        return medicoConsultado.map(this::converterParaDTO).orElse(null);
     }
 
     /**
      * Retorna todos os médicos cadastrados no banco
-     * @return uma Lista com os DTOs dos médicos cadastrados
+     * @return um Page com os DTOs dos médicos cadastrados
      */
-    public List<DadosMedicoCadastrado> findAll() {
-        return medicoRepository.findAll().stream()
-                .map(DadosMedicoCadastrado::new).collect(Collectors.toList());
+    public Page<DadosMedicoCadastrado> findAll(Pageable pageable) {
+        return medicoRepository.findAll(pageable).map(this::converterParaDTO);
+    }
+
+    /**
+     * Faz o parsing para o DTO, que deverá ser devolvido na paginação
+     * @param medico consultado no findAll ou no findMedicoByID
+     * @return um DTO
+     */
+    private DadosMedicoCadastrado converterParaDTO(Medico medico) {
+        return new DadosMedicoCadastrado(medico);
     }
 }

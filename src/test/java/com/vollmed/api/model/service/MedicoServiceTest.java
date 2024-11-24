@@ -10,15 +10,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
 
 import static com.vollmed.api.builders.DadosCadastroMedicoBuilder.dadosDeCadastroMedico;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -35,7 +38,7 @@ public class MedicoServiceTest {
     public void deveCadastrarUmMedico() {
         var dadosCadastro = dadosDeCadastroMedico().validos().agora();
         var medicoCadastrado = new Medico(dadosCadastro);
-        when(medicoRepository.save(Mockito.any(Medico.class))).thenReturn(medicoCadastrado);
+        when(medicoRepository.save(any(Medico.class))).thenReturn(medicoCadastrado);
 
         DadosMedicoCadastrado dadosRetornados = medicoService.cadastrarNovoMedico(dadosCadastro);
         assertNotNull(dadosRetornados);
@@ -45,7 +48,7 @@ public class MedicoServiceTest {
     @DisplayName("Deve lançar exceção caso o banco esteja fora e não consiga cadastrar")
     public void deveLancarExcecao_casoBancoForaNoCadastro() {
         var dadosDeCadastro = dadosDeCadastroMedico().validos().agora();
-        when(medicoRepository.save(Mockito.any(Medico.class))).thenThrow(PersistenceException.class);
+        when(medicoRepository.save(any(Medico.class))).thenThrow(PersistenceException.class);
         assertThrows(MedicoNaoCadastradoException.class, () -> medicoService.cadastrarNovoMedico(dadosDeCadastro));
     }
 
@@ -53,7 +56,7 @@ public class MedicoServiceTest {
     @DisplayName("Deve lançar exceção caso algum dado esteja repetido")
     public void deveLancarExcecao_casoAlgumDadoEstejaRepetido() {
         var dadosDeCadastro = dadosDeCadastroMedico().validos().agora();
-        when(medicoRepository.save(Mockito.any(Medico.class))).thenThrow(DataIntegrityViolationException.class);
+        when(medicoRepository.save(any(Medico.class))).thenThrow(DataIntegrityViolationException.class);
         assertThrows(DataIntegrityViolationException.class, () -> medicoService.cadastrarNovoMedico(dadosDeCadastro));
     }
 
@@ -86,10 +89,14 @@ public class MedicoServiceTest {
         var medico1 = new Medico(dadosCadastroMedico);
         var medico2 = new Medico(dadosCadastroMedico);
         var medico3 = new Medico(dadosCadastroMedico);
-        when(medicoRepository.findAll()).thenReturn(List.of(medico1, medico2, medico3));
+        var pageable = Pageable.unpaged();
+        var pageImpl = new PageImpl<>(List.of(medico1, medico2, medico3));
 
-        List<DadosMedicoCadastrado> medicosCadastrados = medicoService.findAll();
+        when(medicoRepository.findAll(any(Pageable.class))).thenReturn(pageImpl);
+        Page<DadosMedicoCadastrado> medicosCadastrados = medicoService.findAll(pageable);
+
         assertNotNull(medicosCadastrados);
         assertFalse(medicosCadastrados.isEmpty());
+        assertEquals(3, medicosCadastrados.getContent().size());
     }
 }

@@ -4,12 +4,15 @@ import com.vollmed.api.model.dto.DadosCadastroMedico;
 import com.vollmed.api.model.dto.DadosMedicoCadastrado;
 import com.vollmed.api.model.service.MedicoService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 
 /**
  * Endpoint para resolver as requisições do médico no sistema
@@ -59,14 +62,16 @@ public class MedicoController {
 
     /**
      * Busca todos os Médicos do sistema
-     * @return uma Lista de DTOs com todos os médicos cadastrados
+     * @return uma Lista de DTOs com todos os médicos cadastrados,
+     * além de detalhes sobre os dados requisitados, quantidade, ordenação e afins
      */
     @GetMapping
-    public ResponseEntity<List<DadosMedicoCadastrado>> buscarTodos() {
-        List<DadosMedicoCadastrado> medicos = medicoService.findAll();
-        if (medicos.isEmpty()) {
+    public ResponseEntity<Page<DadosMedicoCadastrado>> buscarTodos(
+            @PageableDefault(sort = "nome", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<DadosMedicoCadastrado> dadosConsultados = medicoService.findAll(pageable);
+        if (dadosConsultados.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(medicos);
+        return ResponseEntity.ok(dadosConsultados);
     }
 }
