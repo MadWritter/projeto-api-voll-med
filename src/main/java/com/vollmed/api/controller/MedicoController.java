@@ -4,11 +4,12 @@ import com.vollmed.api.model.dto.DadosCadastroMedico;
 import com.vollmed.api.model.dto.DadosMedicoCadastrado;
 import com.vollmed.api.model.service.MedicoService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -42,5 +43,35 @@ public class MedicoController {
         DadosMedicoCadastrado dadosCadastrados = medicoService.cadastrarNovoMedico(dados);
         URI uri = uriBuilder.path("/medico/{id}").buildAndExpand(dadosCadastrados.id()).toUri();
         return ResponseEntity.created(uri).body(dadosCadastrados);
+    }
+
+    /**
+     * Retorna um Médico a partir de um ID
+     * @param id que vem da URL
+     * @return HTTP 200 e o DTO no corpo da requisição ou 404 caso não
+     * exista o recurso solicitado
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<DadosMedicoCadastrado> buscarMedico(@PathVariable Long id) {
+        DadosMedicoCadastrado dadosConsultados = medicoService.findMedicoByID(id);
+        if (dadosConsultados == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(dadosConsultados);
+    }
+
+    /**
+     * Busca todos os Médicos do sistema
+     * @return uma Lista de DTOs com todos os médicos cadastrados,
+     * além de detalhes sobre os dados requisitados, quantidade, ordenação e afins
+     */
+    @GetMapping
+    public ResponseEntity<Page<DadosMedicoCadastrado>> buscarTodos(
+            @PageableDefault(sort = "nome", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<DadosMedicoCadastrado> dadosConsultados = medicoService.findAll(pageable);
+        if (dadosConsultados.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(dadosConsultados);
     }
 }
