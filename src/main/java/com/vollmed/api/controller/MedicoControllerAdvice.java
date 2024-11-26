@@ -1,15 +1,16 @@
 package com.vollmed.api.controller;
 
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import java.net.ConnectException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
  * Responsável por tratar as exceções no MedicoController
@@ -60,5 +61,26 @@ public class MedicoControllerAdvice {
         response.put("status", 500);
         response.put("message", "Erro ao processar a solicitação, tente novamente em instantes");
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Trata as exceções de leitura da requisição http
+     * @param e exceção a ser tratada
+     * @return uma resposta http de acordo com a exceção
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Object> handleHttpNotReadableException(HttpMessageNotReadableException e) {
+
+        // trata as exceções de deserialização do UF no cadastro.
+        if (e.getMessage().contains("com.vollmed.api.model.entity.UF")) {
+            Map<String, Object> reponse = new LinkedHashMap<>();
+            reponse.put("timestamp", LocalDateTime.now().toString());
+            reponse.put("status", 400);
+            reponse.put("message", "Deve conter um dos UF's do Brasil em caixa alta (ex: SP, AM...)");
+            reponse.put("path", "/medicos");
+            return new ResponseEntity<>(reponse, HttpStatus.BAD_REQUEST);
+        }
+        
+        return ResponseEntity.internalServerError().build();
     }
 }
