@@ -64,6 +64,7 @@ public record DadosCadastroMedico(
         String cidade,
 
         @NotNull(message = "Deve conter um dos UF's do Brasil em caixa alta (ex: SP, AM...")
+        // FIXME deve conter o pattern com os UF's na validação do cadastro
         UF UF,
 
         @NotBlank(message = "CEP não pode estar em branco")
