@@ -1,5 +1,6 @@
 package com.vollmed.api.model.entity;
 
+import com.vollmed.api.model.dto.DadosAtualizacaoMedico;
 import com.vollmed.api.model.dto.DadosCadastroMedico;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -64,14 +65,30 @@ public class Medico {
      */
     public Medico(DadosCadastroMedico dadosCadastroMedico) {
         this(dadosCadastroMedico.nome(), dadosCadastroMedico.email(),
-                dadosCadastroMedico.celular(), dadosCadastroMedico.CRM(),
-                dadosCadastroMedico.especialidade(), new Endereco(
-                        dadosCadastroMedico.logradouro(), dadosCadastroMedico.numero(),
-                        dadosCadastroMedico.complemento(), dadosCadastroMedico.bairro(),
-                        dadosCadastroMedico.cidade(), dadosCadastroMedico.UF(), dadosCadastroMedico.CEP()
-                ));
+        dadosCadastroMedico.celular(), dadosCadastroMedico.CRM(),
+        dadosCadastroMedico.especialidade(), new Endereco(
+            dadosCadastroMedico.logradouro(), dadosCadastroMedico.numero(),
+            dadosCadastroMedico.complemento(), dadosCadastroMedico.bairro(),
+            dadosCadastroMedico.cidade(), dadosCadastroMedico.UF(), dadosCadastroMedico.CEP()
+            ));
     }
 
+    /**
+     * Atualiza na entidade conforme os dados recebidos.
+     * @param dadosDeAtualizacao que vieram do serviço
+     */
+    public void atualizarMedico(DadosAtualizacaoMedico dadosDeAtualizacao) {
+        setNome(dadosDeAtualizacao.nome());
+        setCelular(dadosDeAtualizacao.celular());
+        getEndereco().setLogradouro(dadosDeAtualizacao.logradouro());
+        getEndereco().setNumero(dadosDeAtualizacao.numero());
+        getEndereco().setComplemento(dadosDeAtualizacao.complemento());
+        getEndereco().setBairro(dadosDeAtualizacao.bairro());
+        getEndereco().setCidade(dadosDeAtualizacao.cidade());
+        getEndereco().setUF(dadosDeAtualizacao.UF());
+        getEndereco().setCEP(dadosDeAtualizacao.CEP());
+    }
+        
     public void setNome(String nome) {
         if (nome != null && !nome.isEmpty()) {
             this.nome = nome;
@@ -107,4 +124,5 @@ public class Medico {
             this.endereco = endereco;
         }
     }
+
 }

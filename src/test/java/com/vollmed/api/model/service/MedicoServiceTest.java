@@ -1,10 +1,19 @@
 package com.vollmed.api.model.service;
 
-import com.vollmed.api.model.dto.DadosMedicoCadastrado;
-import com.vollmed.api.model.entity.Medico;
-import com.vollmed.api.model.exceptions.MedicoNaoCadastradoException;
-import com.vollmed.api.model.repository.MedicoRepository;
-import jakarta.persistence.PersistenceException;
+import static com.vollmed.api.builders.DadosAtualizacaoMedicoBuilder.dadosDeAtualização;
+import static com.vollmed.api.builders.DadosCadastroMedicoBuilder.dadosDeCadastroMedico;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,15 +24,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
-import java.util.Optional;
+import com.vollmed.api.model.dto.DadosMedicoCadastrado;
+import com.vollmed.api.model.entity.Medico;
+import com.vollmed.api.model.repository.MedicoRepository;
 
-import static com.vollmed.api.builders.DadosCadastroMedicoBuilder.dadosDeCadastroMedico;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import jakarta.persistence.PersistenceException;
 
 @ExtendWith(MockitoExtension.class)
 public class MedicoServiceTest {
@@ -49,7 +56,7 @@ public class MedicoServiceTest {
     public void deveLancarExcecao_casoBancoForaNoCadastro() {
         var dadosDeCadastro = dadosDeCadastroMedico().validos().agora();
         when(medicoRepository.save(any(Medico.class))).thenThrow(PersistenceException.class);
-        assertThrows(MedicoNaoCadastradoException.class, () -> medicoService.cadastrarNovoMedico(dadosDeCadastro));
+        assertThrows(ResponseStatusException.class, () -> medicoService.cadastrarNovoMedico(dadosDeCadastro));
     }
 
     @Test
@@ -99,4 +106,18 @@ public class MedicoServiceTest {
         assertFalse(medicosCadastrados.isEmpty());
         assertEquals(3, medicosCadastrados.getContent().size());
     }
+
+    @Test
+    @DisplayName("Deve atualizar os dados válidos de um médico existente")
+    public void deveAtualizarDadosDeUmMedico() {
+        var dadosMedicoCadastrado = dadosDeCadastroMedico().validos().agora();
+        var dadosDeAtualizacao = dadosDeAtualização().validos().agora();
+
+        when(medicoRepository.findById(anyLong())).thenReturn(Optional.of(new Medico(dadosMedicoCadastrado)));
+        DadosMedicoCadastrado dadosAtualizados = medicoService.atualizarMedico(1L, dadosDeAtualizacao);
+
+        assertNotNull(dadosAtualizados);
+        assertEquals(dadosDeAtualizacao.nome(), dadosAtualizados.nome());
+    }
+
 }

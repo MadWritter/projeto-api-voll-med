@@ -1,17 +1,21 @@
 package com.vollmed.api.model.service;
 
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.vollmed.api.model.dto.DadosAtualizacaoMedico;
 import com.vollmed.api.model.dto.DadosCadastroMedico;
 import com.vollmed.api.model.dto.DadosMedicoCadastrado;
 import com.vollmed.api.model.entity.Medico;
-import com.vollmed.api.model.exceptions.MedicoNaoCadastradoException;
 import com.vollmed.api.model.repository.MedicoRepository;
+
 import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 /**
  * Serviço para a entidade Médico
@@ -33,14 +37,14 @@ public class MedicoService {
      * @param dadosCadastro que vem da requisição
      * @return um DTO com os dados cadastrados
      */
-    @Transactional(rollbackOn = MedicoNaoCadastradoException.class)
+    @Transactional(rollbackOn = PersistenceException.class)
     public DadosMedicoCadastrado cadastrarNovoMedico(DadosCadastroMedico dadosCadastro) {
         Medico medicoParaCadastrar = new Medico(dadosCadastro);
         try {
             Medico medicoCadastrado = medicoRepository.save(medicoParaCadastrar);
             return new DadosMedicoCadastrado(medicoCadastrado);
         } catch (PersistenceException e) {
-            throw new MedicoNaoCadastradoException("Erro ao persistir o médico no banco");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao persistir o médico no banco, tente novamente mais tarde");
         }
     }
 
@@ -70,5 +74,26 @@ public class MedicoService {
      */
     private DadosMedicoCadastrado converterParaDTO(Medico medico) {
         return new DadosMedicoCadastrado(medico);
+    }
+
+    public DadosMedicoCadastrado atualizarMedico(Long ID, DadosAtualizacaoMedico dadosDeAtualizacao) {
+
+        if (dadosDeAtualizacao.nome() == null && dadosDeAtualizacao.celular() == null &&
+            dadosDeAtualizacao.logradouro() == null && dadosDeAtualizacao.numero() == null &&
+            dadosDeAtualizacao.complemento() == null && dadosDeAtualizacao.bairro() == null &&
+            dadosDeAtualizacao.cidade() == null && dadosDeAtualizacao.UF() == null &&
+            dadosDeAtualizacao.CEP() == null) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "Nenhum campo atualizável informado, somente nome, celular e dados de endereço são atualizáveis");
+        }
+
+        Optional<Medico> medicoConsultado = medicoRepository.findById(ID);
+        if (medicoConsultado.isPresent()) {
+            medicoConsultado.get().atualizarMedico(dadosDeAtualizacao);
+            medicoRepository.flush();
+            return new DadosMedicoCadastrado(medicoConsultado.get());
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O ID informado não tem um correspondente");
+        }
     }
 }

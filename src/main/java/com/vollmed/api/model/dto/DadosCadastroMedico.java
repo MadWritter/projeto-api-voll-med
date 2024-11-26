@@ -63,7 +63,7 @@ public record DadosCadastroMedico(
         @Size(min = 3, max = 50, message = "A cidade deve conter entre 3 e 50 caracteres")
         String cidade,
 
-        @NotBlank(message = "Deve conter um dos UF's do Brasil em caixa alta (ex: SP, AM...)")
+        @NotNull(message = "Deve conter um dos UF's do Brasil em caixa alta (ex: SP, AM...)")
         UF UF,
 
         @NotBlank(message = "CEP não pode estar em branco")

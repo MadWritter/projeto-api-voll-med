@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Responsável por tratar as exceções no MedicoController
@@ -55,12 +56,8 @@ public class MedicoControllerAdvice {
      * @return uma resposta HTTP 500 informando sobre o problema interno.
      */
     @ExceptionHandler(ConnectException.class)
-    public ResponseEntity<Object> handleConnectionException(ConnectException e) {
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("timestamp", LocalDateTime.now().toString());
-        response.put("status", 500);
-        response.put("message", "Erro ao processar a solicitação, tente novamente em instantes");
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseStatusException handleConnectionException(ConnectException e) {
+        return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao processar a solicitação, tente novamente em instantes");
     }
 
     /**
@@ -71,7 +68,7 @@ public class MedicoControllerAdvice {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Object> handleHttpNotReadableException(HttpMessageNotReadableException e) {
 
-        // trata as exceções de deserialização do UF no cadastro.
+        // trata as exceções de deserialização do UF no cadastro ou atualização.
         if (e.getMessage().contains("com.vollmed.api.model.entity.UF")) {
             Map<String, Object> reponse = new LinkedHashMap<>();
             reponse.put("timestamp", LocalDateTime.now().toString());

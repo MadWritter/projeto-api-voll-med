@@ -4,11 +4,21 @@ import com.vollmed.api.model.entity.UF;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+/**
+ * DTO que representa os dados de atualização vindos na requisição.
+ * @param nome entre 3 e 100 caracteres
+ * @param celular com os 11 dígitos
+ * @param logradouro entre 5 e 100 caracteres
+ * @param numero entre 1 e 99999
+ * @param complemento entre 5 e 200 caracteres
+ * @param bairro entre 3 e 50 caracteres
+ * @param cidade entre 3 e 50 caracteres
+ * @param UF uma das siglas das unidades federativas do BR
+ * @param CEP o CEP com 8 dígitos
+ */
 public record DadosAtualizacaoMedico(
         @Size(min = 3, max = 100, message = "Nome deve conter entre 3 e 100 caracteres") 
         String nome,
@@ -33,10 +43,8 @@ public record DadosAtualizacaoMedico(
         @Size(min = 3, max = 50, message = "A cidade deve conter entre 3 e 50 caracteres")
         String cidade,
 
-        @NotNull(message = "Deve conter um dos UF's do Brasil em caixa alta (ex: SP, AM...")
         UF UF,
-
-        @NotBlank(message = "CEP não pode estar em branco")
+        
         @Size(min = 8, max = 8, message = "Somente os 8 dígitos do CEP")
         @Pattern(regexp = "\\d{8}", message = "Deve conter apenas os números do CEP")
         String CEP
