@@ -55,7 +55,7 @@ public class MedicoService {
      * correspondente
      */
     public DadosMedicoCadastrado findMedicoByID(Long ID) {
-        Optional<Medico> medicoConsultado = medicoRepository.findById(ID);
+        Optional<Medico> medicoConsultado = medicoRepository.findByIdAndAtivoTrue(ID);
         return medicoConsultado.map(this::converterParaDTO).orElse(null);
     }
 
@@ -64,18 +64,24 @@ public class MedicoService {
      * @return um Page com os DTOs dos médicos cadastrados
      */
     public Page<DadosMedicoCadastrado> findAll(Pageable pageable) {
-        return medicoRepository.findAll(pageable).map(this::converterParaDTO);
+        return medicoRepository.findAllByAtivoTrue(pageable).map(this::converterParaDTO);
     }
 
     /**
      * Faz o parsing para o DTO, que deverá ser devolvido na paginação
      * @param medico consultado no findAll ou no findMedicoByID
-     * @return um DTO
+     * @return um DTO com os dados do médico
      */
     private DadosMedicoCadastrado converterParaDTO(Medico medico) {
         return new DadosMedicoCadastrado(medico);
     }
 
+    /**
+     * Faz a atualização dos dados do médico com o id informado
+     * @param ID que veio na url
+     * @param dadosDeAtualizacao que vieram no corpo da requisição
+     * @return um DTO com os dados atualizados do médico
+     */
     public DadosMedicoCadastrado atualizarMedico(Long ID, DadosAtualizacaoMedico dadosDeAtualizacao) {
 
         if (dadosDeAtualizacao.nome() == null && dadosDeAtualizacao.celular() == null &&
@@ -87,7 +93,7 @@ public class MedicoService {
                 HttpStatus.BAD_REQUEST, "Nenhum campo atualizável informado, somente nome, celular e dados de endereço são atualizáveis");
         }
 
-        Optional<Medico> medicoConsultado = medicoRepository.findById(ID);
+        Optional<Medico> medicoConsultado = medicoRepository.findByIdAndAtivoTrue(ID);
         if (medicoConsultado.isPresent()) {
             medicoConsultado.get().atualizarMedico(dadosDeAtualizacao);
             medicoRepository.flush();

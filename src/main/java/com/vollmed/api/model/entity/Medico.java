@@ -39,6 +39,9 @@ public class Medico {
 
     @Embedded
     private Endereco endereco;
+    
+    @Column(nullable = false)
+    private Boolean ativo;
 
     /**
      * Construtor padrão para cadastrar um médico
@@ -57,6 +60,7 @@ public class Medico {
         setCRM(CRM);
         setEspecialidade(especialidade);
         setEndereco(endereco);
+        setAtivo(true);
     }
 
     /**
@@ -122,6 +126,12 @@ public class Medico {
     public void setEndereco(Endereco endereco) {
         if (endereco != null) {
             this.endereco = endereco;
+        }
+    }
+
+    public void setAtivo(Boolean status) {
+        if (status != null) {
+            this.ativo = status;
         }
     }
 

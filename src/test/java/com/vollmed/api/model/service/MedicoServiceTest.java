@@ -72,7 +72,7 @@ public class MedicoServiceTest {
     public void deveBuscarUmMedico() {
         var dadosCadastroMedico = dadosDeCadastroMedico().validos().agora();
         var medicoCadastrado = new Medico(dadosCadastroMedico);
-        when(medicoRepository.findById(anyLong())).thenReturn(Optional.of(medicoCadastrado));
+        when(medicoRepository.findByIdAndAtivoTrue(anyLong())).thenReturn(Optional.of(medicoCadastrado));
 
         DadosMedicoCadastrado dadosCadastrado = medicoService.findMedicoByID(1L);
 
@@ -82,7 +82,7 @@ public class MedicoServiceTest {
     @Test
     @DisplayName("Deve retornar null caso não encontre um médico")
     public void deveRetornarNull_casoMedicoNaoExista() {
-        when(medicoRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(medicoRepository.findByIdAndAtivoTrue(anyLong())).thenReturn(Optional.empty());
 
         DadosMedicoCadastrado dadosMedicoCadastrado = medicoService.findMedicoByID(1L);
 
@@ -99,7 +99,7 @@ public class MedicoServiceTest {
         var pageable = Pageable.unpaged();
         var pageImpl = new PageImpl<>(List.of(medico1, medico2, medico3));
 
-        when(medicoRepository.findAll(any(Pageable.class))).thenReturn(pageImpl);
+        when(medicoRepository.findAllByAtivoTrue(any(Pageable.class))).thenReturn(pageImpl);
         Page<DadosMedicoCadastrado> medicosCadastrados = medicoService.findAll(pageable);
 
         assertNotNull(medicosCadastrados);
@@ -113,7 +113,7 @@ public class MedicoServiceTest {
         var dadosMedicoCadastrado = dadosDeCadastroMedico().validos().agora();
         var dadosDeAtualizacao = dadosDeAtualização().validos().agora();
 
-        when(medicoRepository.findById(anyLong())).thenReturn(Optional.of(new Medico(dadosMedicoCadastrado)));
+        when(medicoRepository.findByIdAndAtivoTrue(anyLong())).thenReturn(Optional.of(new Medico(dadosMedicoCadastrado)));
         DadosMedicoCadastrado dadosAtualizados = medicoService.atualizarMedico(1L, dadosDeAtualizacao);
 
         assertNotNull(dadosAtualizados);
