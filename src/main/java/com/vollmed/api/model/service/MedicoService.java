@@ -102,4 +102,15 @@ public class MedicoService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O ID informado não tem um correspondente");
         }
     }
+
+    public DadosMedicoCadastrado excluirMedico(Long ID) {
+        Optional<Medico> medicoConsultado = medicoRepository.findByIdAndAtivoTrue(ID);
+        if (medicoConsultado.isPresent()) {
+            medicoConsultado.get().setAtivo(false);
+            medicoRepository.flush();
+            return new DadosMedicoCadastrado(medicoConsultado.get());
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O ID informado não tem um correspondente");
+        }
+    }
 }
