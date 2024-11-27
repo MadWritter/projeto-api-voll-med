@@ -1,8 +1,13 @@
 package com.vollmed.api.model.repository;
 
-import com.vollmed.api.model.entity.Medico;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.vollmed.api.model.entity.Medico;
 
 /**
  * Repository para encapsular as transações da entidade Médico
@@ -11,4 +16,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface MedicoRepository extends JpaRepository<Medico, Long> {
+
+    public Optional<Medico> findByIdAndAtivoTrue(Long id);
+    public Page<Medico> findAllByAtivoTrue(Pageable pageable);
 }
