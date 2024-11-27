@@ -104,6 +104,11 @@ public class MedicoController {
         return ResponseEntity.ok(dadosAtualizados);
     }
 
+    /**
+     * Solicita a exclusão de um médico
+     * @param id que vem na url
+     * @return um DTO com os dados do médico excluído
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<DadosMedicoCadastrado> excluirMedico(@PathVariable Long id) {
         DadosMedicoCadastrado dadosMedicoExcluido = medicoService.excluirMedico(id);

@@ -103,6 +103,11 @@ public class MedicoService {
         }
     }
 
+    /**
+     * Faz a exclusão de um médico no sistema
+     * @param ID que vem na url
+     * @return um DTO com os dados do médico excluido.
+     */
     public DadosMedicoCadastrado excluirMedico(Long ID) {
         Optional<Medico> medicoConsultado = medicoRepository.findByIdAndAtivoTrue(ID);
         if (medicoConsultado.isPresent()) {
