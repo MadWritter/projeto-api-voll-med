@@ -2,6 +2,11 @@ package com.vollmed.api.model.dto;
 
 import com.vollmed.api.model.entity.Paciente;
 
+/**
+ * DTO com os dados do paciente criado
+ * @since branch paciente
+ * @author Jean Maciel
+ */
 public record DadosPacienteCadastrado(
     Long id,
     String nome,

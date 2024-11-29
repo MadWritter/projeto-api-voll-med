@@ -65,23 +65,33 @@ public class Paciente {
     }
 
     public void setNome(String nome) {
-        this.nome = nome;
+        if (nome != null && !nome.isBlank()) {
+            this.nome = nome;
+        }
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        if (email != null && !email.isBlank()) {
+            this.email = email;
+        }
     }
 
     public void setCelular(String celular) {
-        this.celular = celular;
+        if (celular != null && !celular.isBlank()) {
+            this.celular = celular;
+        }
     }
 
-    public void setCPF(String cPF) {
-        CPF = cPF;
+    public void setCPF(String CPF) {
+        if (CPF != null && !CPF.isBlank()) {
+            this.CPF = CPF;
+        }
     }
 
     public void setEndereco(Endereco endereco) {
-        this.endereco = endereco;
+        if (endereco != null) {
+            this.endereco = endereco;
+        }
     }
 
     

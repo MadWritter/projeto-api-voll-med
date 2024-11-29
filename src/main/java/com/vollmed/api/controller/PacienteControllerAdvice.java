@@ -10,9 +10,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+/**
+ * Trata as exceções pertinentes as requisições do controller do Paciente
+ * @since branch paciente
+ * @author Jean Maciel
+ * @see PacienteController
+ */
 @RestControllerAdvice(assignableTypes = PacienteController.class)
 public class PacienteControllerAdvice {
     
+    /**
+     * Trata as exceções de duplicidade de dados no cadastro.
+     * @param e exceção causada pela duplicidade
+     * @return uma resposta Http 400 BAD REQUEST com o motivo da rejeição
+     */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         Map<String, Object> response = new LinkedHashMap<>();
