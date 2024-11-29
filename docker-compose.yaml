@@ -1,0 +1,8 @@
+services:
+  db:
+    image: mysql:8.0.40
+    restart: always
+    env_file:
+      ".env"
+    ports:
+      - "3306:3306"
