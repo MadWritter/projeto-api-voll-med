@@ -12,4 +12,6 @@ public class PacienteService {
     public PacienteService(PacienteRepository pacienteRepository) {
         this.pacienteRepository = pacienteRepository;
     }
+
+    //TODO implementar o serviço
 }
