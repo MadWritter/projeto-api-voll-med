@@ -1,5 +1,7 @@
 package com.vollmed.api.model.entity;
 
+import com.vollmed.api.model.dto.DadosCadastroPaciente;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -49,6 +51,17 @@ public class Paciente {
         setCelular(celular);
         setCPF(CPF);
         setEndereco(endereco);
+    }
+
+    /**
+     * Construtor a partir de um DTO com os dados de cadastro.
+     * @param dados que vieram na requisição do cadastro.
+     */
+    public Paciente(DadosCadastroPaciente dados) {
+        this(dados.nome(), dados.email(), dados.celular(), dados.CPF(), 
+            new Endereco(
+                dados.logradouro(), dados.numero(), dados.complemento(), 
+                dados.bairro(), dados.cidade(), dados.UF(), dados.CEP()));
     }
 
     public void setNome(String nome) {
