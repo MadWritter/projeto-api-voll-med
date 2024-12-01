@@ -3,6 +3,8 @@ package com.vollmed.api.controller;
 import java.net.URI;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,5 +47,16 @@ public class PacienteController {
             DadosPacienteCadastrado pacienteCadastrado = pacienteService.cadastrarPaciente(dados);
             URI uri = uriBuilder.path("/paciente/{id}").buildAndExpand(pacienteCadastrado.id()).toUri();
             return ResponseEntity.created(uri).body(pacienteCadastrado);
+    }
+
+    /**
+     * Solicita os dados de um paciente a partir de um ID
+     * @param id que vem na URL
+     * @return um DTO com os dados do recurso solicitado
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<DadosPacienteCadastrado> obterPaciente(@PathVariable Long id) {
+        DadosPacienteCadastrado dadosPacienteCadastrado = pacienteService.buscarPaciente(id);
+        return ResponseEntity.ok().body(dadosPacienteCadastrado);
     }
 }

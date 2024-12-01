@@ -40,7 +40,24 @@ public class PacienteService {
             return new DadosPacienteCadastrado(pacienteCadastrado);
         } catch(PersistenceException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, 
-            "Erro ao processar a solicitação doc cadastro, tente novamente em instantes");
+            "Erro ao processar a solicitação do cadastro, tente novamente em instantes");
+        }
+    }
+
+    /**
+     * Faz a consulta de um paciente a partir de um ID
+     * @param ID que veio na URI
+     * @return um DTO com os dados do paciente
+     */
+    public DadosPacienteCadastrado buscarPaciente(Long ID) {
+        try {
+            return pacienteRepository.findById(ID).map(DadosPacienteCadastrado::new)
+                .orElseThrow(
+                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, 
+                "O ID informado não tem recurso correspondente"));
+        } catch(PersistenceException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, 
+            "Erro ao processar a solicitação, tente novamente em instantes");
         }
     }
 

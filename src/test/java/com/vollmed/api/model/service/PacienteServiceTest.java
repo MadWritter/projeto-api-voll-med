@@ -4,7 +4,10 @@ import static com.vollmed.builders.DadosCadastroPacienteBuilder.dadosDeCadastro;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,5 +60,25 @@ public class PacienteServiceTest {
         when(pacienteRepository.save(any(Paciente.class))).thenThrow(DataIntegrityViolationException.class);
 
         assertThrows(DataIntegrityViolationException.class, () -> pacienteService.cadastrarPaciente(dadosDeCadastro));
+    }
+
+    @Test
+    @DisplayName("Deve retornar um DTO com os dados do paciente a partir do ID")
+    public void deveRetornarUmPacientePeloID() {
+        var dadosDeCadastro = dadosDeCadastro().validos().agora();
+        var pacienteCadastrado = new Paciente(dadosDeCadastro);
+        when(pacienteRepository.findById(anyLong())).thenReturn(Optional.of(pacienteCadastrado));
+
+        DadosPacienteCadastrado dadosRetornados = pacienteService.buscarPaciente(1L);
+
+        assertNotNull(dadosRetornados);
+    }
+
+    @Test
+    @DisplayName("Deve lancar exceção caso não tenha um recurso correspondente ao ID informado")
+    public void deveLancarExcecao_casoIDInformadoNaoTenhaCorrespondente() {
+        when(pacienteRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(ResponseStatusException.class, () -> pacienteService.buscarPaciente(1L));
     }
 }
