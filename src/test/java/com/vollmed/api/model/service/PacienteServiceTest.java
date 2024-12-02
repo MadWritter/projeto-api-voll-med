@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +17,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.vollmed.api.model.dto.DadosPacienteCadastrado;
@@ -80,5 +84,19 @@ public class PacienteServiceTest {
         when(pacienteRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(ResponseStatusException.class, () -> pacienteService.buscarPaciente(1L));
+    }
+
+    @Test
+    @DisplayName("Deve retornar uma lista com os pacientes cadastrados")
+    public void deveRetornarUmaListaDePacientes() {
+        var dadosPaciente = dadosDeCadastro().validos().agora();
+        var pageImpl = 
+            new PageImpl<>(
+                List.of(new Paciente(dadosPaciente), new Paciente(dadosPaciente), new Paciente(dadosPaciente)));
+        when(pacienteRepository.findAll(any(Pageable.class))).thenReturn(pageImpl);
+
+        Page<DadosPacienteCadastrado> dadosRecebidos = pacienteService.findAll(Pageable.unpaged());
+        
+        assertNotNull(dadosRecebidos);
     }
 }

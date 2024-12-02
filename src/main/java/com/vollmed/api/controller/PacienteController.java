@@ -2,6 +2,10 @@ package com.vollmed.api.controller;
 
 import java.net.URI;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,5 +62,17 @@ public class PacienteController {
     public ResponseEntity<DadosPacienteCadastrado> obterPaciente(@PathVariable Long id) {
         DadosPacienteCadastrado dadosPacienteCadastrado = pacienteService.buscarPaciente(id);
         return ResponseEntity.ok().body(dadosPacienteCadastrado);
+    }
+
+    /**
+     * Solicita todos os pacientes cadastrados
+     * @param pageable para ordenação e paginação do resultado
+     * @return um JSON com os dados paginados e ordenados
+     */
+    @GetMapping
+    public ResponseEntity<Page<DadosPacienteCadastrado>> getAll(
+        @PageableDefault(sort = "nome", direction = Direction.ASC, size = 10) Pageable pageable) {
+            Page<DadosPacienteCadastrado> pacientesCadastrados = pacienteService.findAll(pageable);
+            return ResponseEntity.ok(pacientesCadastrados);
     }
 }
