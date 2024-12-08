@@ -1,7 +1,6 @@
 package com.vollmed.api.controller;
 
 import java.net.URI;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -10,16 +9,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-
+import com.vollmed.api.model.dto.DadosAtualizacaoPaciente;
 import com.vollmed.api.model.dto.DadosCadastroPaciente;
 import com.vollmed.api.model.dto.DadosPacienteCadastrado;
 import com.vollmed.api.model.entity.Paciente;
 import com.vollmed.api.model.service.PacienteService;
-
 import jakarta.validation.Valid;
 
 
@@ -74,5 +73,18 @@ public class PacienteController {
         @PageableDefault(sort = "nome", direction = Direction.ASC, size = 10) Pageable pageable) {
             Page<DadosPacienteCadastrado> pacientesCadastrados = pacienteService.findAll(pageable);
             return ResponseEntity.ok(pacientesCadastrados);
+    }
+
+    /**
+     * Solicita a atualização do paciente cadastrado
+     * @param id
+     * @param dadosDeAtualizaçao
+     * @return
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<DadosPacienteCadastrado> atualizarPaciente(
+        @PathVariable Long id, @RequestBody DadosAtualizacaoPaciente dadosDeAtualizaçao) {
+        DadosPacienteCadastrado dadosPacienteCadastrado = pacienteService.atualizarPaciente(id, dadosDeAtualizaçao);
+        return ResponseEntity.ok(dadosPacienteCadastrado);
     }
 }

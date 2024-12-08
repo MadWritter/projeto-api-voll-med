@@ -1,15 +1,15 @@
 package com.vollmed.api.model.service;
 
+import static com.vollmed.builders.DadosAtualizacaoPacienteBuilder.dadosDeAtualizacao;
 import static com.vollmed.builders.DadosCadastroPacienteBuilder.dadosDeCadastro;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
-
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.server.ResponseStatusException;
-
 import com.vollmed.api.model.dto.DadosPacienteCadastrado;
 import com.vollmed.api.model.entity.Paciente;
 import com.vollmed.api.model.repository.PacienteRepository;
@@ -98,5 +97,20 @@ public class PacienteServiceTest {
         Page<DadosPacienteCadastrado> dadosRecebidos = pacienteService.findAll(Pageable.unpaged());
         
         assertNotNull(dadosRecebidos);
+    }
+
+    @Test
+    @DisplayName("Deve atualizar os dados de um paciente")
+    public void deveAtualizarUmPaciente() {
+        var dadosPacienteCadastrado = dadosDeCadastro().validos().agora();
+        var pacienteCadastrado = new Paciente(dadosPacienteCadastrado);
+        var dadosDeAtualizacao = dadosDeAtualizacao().validos().agora();
+
+        when(pacienteRepository.findById(anyLong())).thenReturn(Optional.of(pacienteCadastrado));
+
+        DadosPacienteCadastrado dtoRetornado = pacienteService.atualizarPaciente(1L, dadosDeAtualizacao);
+
+        assertNotNull(dtoRetornado);
+        assertEquals("Teste2", dtoRetornado.nome());
     }
 }

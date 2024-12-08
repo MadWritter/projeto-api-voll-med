@@ -1,16 +1,16 @@
 package com.vollmed.api.model.service;
 
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
+import com.vollmed.api.model.dto.DadosAtualizacaoPaciente;
 import com.vollmed.api.model.dto.DadosCadastroPaciente;
 import com.vollmed.api.model.dto.DadosPacienteCadastrado;
 import com.vollmed.api.model.entity.Paciente;
 import com.vollmed.api.model.repository.PacienteRepository;
-
 import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
 
@@ -82,6 +82,32 @@ public class PacienteService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, 
             "Erro ao processar a solicitação, tente novamente em instantes");
         } 
+    }
+
+    /**
+     * Atualiza os dados de um Paciente a partir de um ID
+     * @param ID que veio na URL
+     * @param dadosDeAtualizacao que vieram no corpo da requisição.
+     * @return um DTO com os dados atualizados.
+     */
+    public DadosPacienteCadastrado atualizarPaciente(Long ID, DadosAtualizacaoPaciente dadosDeAtualizacao) {
+
+        if (dadosDeAtualizacao.nome() == null && dadosDeAtualizacao.celular() == null &&
+            dadosDeAtualizacao.logradouro() == null && dadosDeAtualizacao.numero() == null &&
+            dadosDeAtualizacao.complemento() == null && dadosDeAtualizacao.bairro() == null &&
+            dadosDeAtualizacao.cidade() == null && dadosDeAtualizacao.UF() == null &&
+            dadosDeAtualizacao.CEP() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nenhum campo atualizável informado no corpo da requisição");
+        }
+
+        Optional<Paciente> pacienteConsultado = pacienteRepository.findById(ID);
+        if (pacienteConsultado.isPresent()) {
+            pacienteConsultado.get().atualizarDados(dadosDeAtualizacao);
+            pacienteRepository.flush();
+            return new DadosPacienteCadastrado(pacienteConsultado.get());
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhum recurso encontrado a partir do ID informado");
+        }
     }
 
     //TODO implementar o serviço
