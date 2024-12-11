@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -77,14 +78,25 @@ public class PacienteController {
 
     /**
      * Solicita a atualização do paciente cadastrado
-     * @param id
-     * @param dadosDeAtualizaçao
-     * @return
+     * @param id que veio na URL
+     * @param dadosDeAtualizaçao que vem no corpo da requisição
+     * @return um DTO com os dados atualizados.
      */
     @PutMapping("/{id}")
     public ResponseEntity<DadosPacienteCadastrado> atualizarPaciente(
         @PathVariable Long id, @RequestBody DadosAtualizacaoPaciente dadosDeAtualizaçao) {
         DadosPacienteCadastrado dadosPacienteCadastrado = pacienteService.atualizarPaciente(id, dadosDeAtualizaçao);
         return ResponseEntity.ok(dadosPacienteCadastrado);
+    }
+
+    /**
+     * Solicita a exclusão de um paciente cadastrado
+     * @param id que veio na URL
+     * @return um DTO com os dados do paciente excluido.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<DadosPacienteCadastrado> excluirPaciente(@PathVariable Long id) {
+        DadosPacienteCadastrado dadosPaciente = pacienteService.excluirPaciente(id);
+        return ResponseEntity.ok(dadosPaciente);
     }
 }

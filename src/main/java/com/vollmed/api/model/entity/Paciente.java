@@ -37,6 +37,8 @@ public class Paciente {
     private String CPF;
     @Embedded
     private Endereco endereco;
+    @Column(nullable = false)
+    private Boolean ativo;
 
     /**
      * Construtor padrão para a entidade
@@ -53,6 +55,7 @@ public class Paciente {
         setCelular(celular);
         setCPF(CPF);
         setEndereco(endereco);
+        setAtivo(true);
     }
 
     /**
@@ -131,6 +134,12 @@ public class Paciente {
     public void setEndereco(Endereco endereco) {
         if (endereco != null) {
             this.endereco = endereco;
+        }
+    }
+
+    public void setAtivo(Boolean status) {
+        if (status != null) {
+            this.ativo = status;
         }
     }
 

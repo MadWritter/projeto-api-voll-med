@@ -3,6 +3,7 @@ package com.vollmed.api.model.service;
 import static com.vollmed.builders.DadosAtualizacaoPacienteBuilder.dadosDeAtualizacao;
 import static com.vollmed.builders.DadosCadastroPacienteBuilder.dadosDeCadastro;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -70,7 +71,7 @@ public class PacienteServiceTest {
     public void deveRetornarUmPacientePeloID() {
         var dadosDeCadastro = dadosDeCadastro().validos().agora();
         var pacienteCadastrado = new Paciente(dadosDeCadastro);
-        when(pacienteRepository.findById(anyLong())).thenReturn(Optional.of(pacienteCadastrado));
+        when(pacienteRepository.findByIdAndAtivoTrue(anyLong())).thenReturn(Optional.of(pacienteCadastrado));
 
         DadosPacienteCadastrado dadosRetornados = pacienteService.buscarPaciente(1L);
 
@@ -80,7 +81,7 @@ public class PacienteServiceTest {
     @Test
     @DisplayName("Deve lancar exceção caso não tenha um recurso correspondente ao ID informado")
     public void deveLancarExcecao_casoIDInformadoNaoTenhaCorrespondente() {
-        when(pacienteRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(pacienteRepository.findByIdAndAtivoTrue(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(ResponseStatusException.class, () -> pacienteService.buscarPaciente(1L));
     }
@@ -92,7 +93,7 @@ public class PacienteServiceTest {
         var pageImpl = 
             new PageImpl<>(
                 List.of(new Paciente(dadosPaciente), new Paciente(dadosPaciente), new Paciente(dadosPaciente)));
-        when(pacienteRepository.findAll(any(Pageable.class))).thenReturn(pageImpl);
+        when(pacienteRepository.findAllByAtivoTrue(any(Pageable.class))).thenReturn(pageImpl);
 
         Page<DadosPacienteCadastrado> dadosRecebidos = pacienteService.findAll(Pageable.unpaged());
         
@@ -106,11 +107,25 @@ public class PacienteServiceTest {
         var pacienteCadastrado = new Paciente(dadosPacienteCadastrado);
         var dadosDeAtualizacao = dadosDeAtualizacao().validos().agora();
 
-        when(pacienteRepository.findById(anyLong())).thenReturn(Optional.of(pacienteCadastrado));
+        when(pacienteRepository.findByIdAndAtivoTrue(anyLong())).thenReturn(Optional.of(pacienteCadastrado));
 
         DadosPacienteCadastrado dtoRetornado = pacienteService.atualizarPaciente(1L, dadosDeAtualizacao);
 
         assertNotNull(dtoRetornado);
         assertEquals("Teste2", dtoRetornado.nome());
+    }
+
+    @Test
+    @DisplayName("Deve excluir um paciente") 
+    public void deveExcluirUmPaciente() {
+        var dadosPacienteCadastrado = dadosDeCadastro().validos().agora();
+        var pacienteCadastrado = new Paciente(dadosPacienteCadastrado);
+
+        when(pacienteRepository.findByIdAndAtivoTrue(anyLong())).thenReturn(Optional.of(pacienteCadastrado));
+        
+        DadosPacienteCadastrado dtoRetornado = pacienteService.excluirPaciente(1L);
+
+        assertNotNull(dtoRetornado);
+        assertFalse(pacienteCadastrado.getAtivo());
     }
 }

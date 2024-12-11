@@ -53,7 +53,7 @@ public class PacienteService {
      */
     public DadosPacienteCadastrado buscarPaciente(Long ID) {
         try {
-            return pacienteRepository.findById(ID).map(DadosPacienteCadastrado::new)
+            return pacienteRepository.findByIdAndAtivoTrue(ID).map(DadosPacienteCadastrado::new)
                 .orElseThrow(
                     () -> new ResponseStatusException(HttpStatus.NOT_FOUND, 
                 "O ID informado não tem recurso correspondente"));
@@ -72,7 +72,7 @@ public class PacienteService {
      */
     public Page<DadosPacienteCadastrado> findAll(Pageable pageable) {
         try {
-            Page<Paciente> pacientes = pacienteRepository.findAll(pageable);
+            Page<Paciente> pacientes = pacienteRepository.findAllByAtivoTrue(pageable);
             if (!pacientes.isEmpty()) {
                 return pacientes.map(DadosPacienteCadastrado::new);
             } else {
@@ -100,7 +100,7 @@ public class PacienteService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nenhum campo atualizável informado no corpo da requisição");
         }
 
-        Optional<Paciente> pacienteConsultado = pacienteRepository.findById(ID);
+        Optional<Paciente> pacienteConsultado = pacienteRepository.findByIdAndAtivoTrue(ID);
         if (pacienteConsultado.isPresent()) {
             pacienteConsultado.get().atualizarDados(dadosDeAtualizacao);
             pacienteRepository.flush();
@@ -110,5 +110,19 @@ public class PacienteService {
         }
     }
 
-    //TODO implementar o serviço
+    /**
+     * Faz a exclusão lógica de um paciente do sistema
+     * @param id que veio na URL da requisição
+     * @return um DTO com os dados do paciente excluido.
+     */
+    public DadosPacienteCadastrado excluirPaciente(Long id) {
+        Optional<Paciente> pacienteConsultado = pacienteRepository.findByIdAndAtivoTrue(id);
+        if (pacienteConsultado.isPresent()) {
+            pacienteConsultado.get().setAtivo(false);
+            pacienteRepository.flush();
+            return new DadosPacienteCadastrado(pacienteConsultado.get());
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhum recurso encontrado a partir do ID informado");
+        }
+    }
 }

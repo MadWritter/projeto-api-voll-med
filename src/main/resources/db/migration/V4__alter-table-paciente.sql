@@ -1,0 +1,1 @@
+ALTER TABLE paciente ADD COLUMN ativo TINYINT(1) NOT NULL;
