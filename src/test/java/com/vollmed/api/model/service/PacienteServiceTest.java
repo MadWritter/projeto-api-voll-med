@@ -1,7 +1,7 @@
 package com.vollmed.api.model.service;
 
-import static com.vollmed.builders.DadosAtualizacaoPacienteBuilder.dadosDeAtualizacao;
-import static com.vollmed.builders.DadosCadastroPacienteBuilder.dadosDeCadastro;
+import static com.vollmed.api.builders.DadosAtualizacaoPacienteBuilder.dadosDeAtualizacao;
+import static com.vollmed.api.builders.DadosCadastroPacienteBuilder.dadosDeCadastro;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

@@ -1,4 +1,4 @@
-package com.vollmed.builders;
+package com.vollmed.api.builders;
 
 import com.vollmed.api.model.dto.DadosAtualizacaoPaciente;
 import com.vollmed.api.model.entity.UF;
