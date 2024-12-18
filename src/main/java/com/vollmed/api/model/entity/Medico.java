@@ -1,5 +1,7 @@
 package com.vollmed.api.model.entity;
 
+import java.util.List;
+
 import com.vollmed.api.model.dto.DadosAtualizacaoMedico;
 import com.vollmed.api.model.dto.DadosCadastroMedico;
 import jakarta.persistence.*;
@@ -42,6 +44,9 @@ public class Medico {
     
     @Column(nullable = false)
     private Boolean ativo;
+
+    @OneToMany(mappedBy = "medico")
+    private List<Consulta> consultas;
 
     /**
      * Construtor padrão para cadastrar um médico
